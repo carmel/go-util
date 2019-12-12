@@ -1,7 +1,7 @@
 package pool
 
 import (
-	"goutil/deque"
+	"github.com/carmel/goutil/deque"
 	"sync"
 	"sync/atomic"
 	"time"
