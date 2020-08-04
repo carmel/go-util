@@ -1,0 +1,20 @@
+ca:
+  Subject: Server
+  Issuer: ExampleCA
+  DNS: "*.example.com"
+  IP: "127.0.0.1"
+  Expire: "20 years"
+  Organization: "Acme Co"
+
+server:
+  Subject: Server
+  Issuer: ExampleCA
+  DNS: "*.example.com"
+  IP: "127.0.0.1"
+  Expire: "20 years"
+  Organization: "Acme Co"
+
+CLient:
+  Subject: Client
+  Issuer: ExampleCA
+  Expire: "20 years"
