@@ -1,4 +1,4 @@
-package util
+package main
 
 import (
 	"crypto/x509"
@@ -8,18 +8,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"testing"
-
-	certi "github.com/carmel/goUtil/certi"
 )
 
 func TestEncode(t *testing.T) {
 	flag.Parse()
 
-	certi.GenRootCA()
+	GenRootCA()
 
-	certi.GenServerCA()
+	GenServerCA()
 
-	certi.GenClientCA()
+	GenClientCA()
 }
 
 func TestDecode(t *testing.T) {
