@@ -1,9 +1,11 @@
-package util
+package test
 
 import (
 	"fmt"
 	"goutil/http"
 	"testing"
+
+	http "github.com/goUtil/http"
 )
 
 func TestHttp(t *testing.T) {

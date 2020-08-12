@@ -1,16 +1,18 @@
-package pool
+package test
 
 import (
 	"fmt"
 	"sync"
 	"testing"
 	"time"
+
+	pool "github.com/goUtil/pool"
 )
 
 const max = 20
 
 func TestTask(t *testing.T) {
-	wp := New(4)
+	wp := pool.New(4)
 	defer wp.StopWait()
 
 	for i := 1; i <= 10000; i++ {
@@ -21,7 +23,7 @@ func TestTask(t *testing.T) {
 }
 
 func TestReadmeExample(t *testing.T) {
-	wp := New(2)
+	wp := pool.New(2)
 	requests := []string{"alpha", "beta", "gamma", "delta", "epsilon"}
 
 	for _, r := range requests {
@@ -35,7 +37,7 @@ func TestReadmeExample(t *testing.T) {
 }
 
 func TestExample(t *testing.T) {
-	wp := New(2)
+	wp := pool.New(2)
 	requests := []string{"alpha", "beta", "gamma", "delta", "epsilon"}
 
 	rspChan := make(chan string, len(requests))
@@ -66,12 +68,12 @@ func TestExample(t *testing.T) {
 func TestMaxWorkers(t *testing.T) {
 	t.Parallel()
 
-	wp := New(0)
+	wp := pool.New(0)
 	if wp.maxWorkers != 1 {
 		t.Fatal("should have created one worker")
 	}
 
-	wp = New(max)
+	wp = pool.New(max)
 	defer wp.Stop()
 
 	started := make(chan struct{}, max)
@@ -107,7 +109,7 @@ func TestMaxWorkers(t *testing.T) {
 func TestReuseWorkers(t *testing.T) {
 	t.Parallel()
 
-	wp := New(5)
+	wp := pool.New(5)
 	defer wp.Stop()
 
 	sync := make(chan struct{})
@@ -129,7 +131,7 @@ func TestReuseWorkers(t *testing.T) {
 func TestWorkerTimeout(t *testing.T) {
 	t.Parallel()
 
-	wp := New(max)
+	wp := pool.New(max)
 	defer wp.Stop()
 
 	sync := make(chan struct{})
@@ -174,7 +176,7 @@ func TestWorkerTimeout(t *testing.T) {
 func TestStop(t *testing.T) {
 	t.Parallel()
 
-	wp := New(max)
+	wp := pool.New(max)
 	defer wp.Stop()
 
 	started := make(chan struct{}, max)
@@ -216,7 +218,7 @@ func TestStop(t *testing.T) {
 	}
 
 	// Start workers, and have them all wait on a channel before completing.
-	wp = New(5)
+	wp = pool.New(5)
 	sync = make(chan struct{})
 	finished := make(chan struct{}, max)
 	for i := 0; i < max; i++ {
@@ -254,7 +256,7 @@ func TestStopWait(t *testing.T) {
 	t.Parallel()
 
 	// Start workers, and have them all wait on a channel before completing.
-	wp := New(5)
+	wp := pool.New(5)
 	sync := make(chan struct{})
 	finished := make(chan struct{}, max)
 	for i := 0; i < max; i++ {
@@ -287,7 +289,7 @@ func TestStopWait(t *testing.T) {
 	}
 
 	// Make sure that calling StopWait() with no queued tasks is OK.
-	wp = New(5)
+	wp = pool.New(5)
 	wp.StopWait()
 
 	if anyReady(wp) {
@@ -299,7 +301,7 @@ func TestStopWait(t *testing.T) {
 }
 
 func TestSubmitWait(t *testing.T) {
-	wp := New(1)
+	wp := pool.New(1)
 	defer wp.Stop()
 
 	// Check that these are noop.
@@ -330,7 +332,7 @@ func TestSubmitWait(t *testing.T) {
 }
 
 func TestOverflow(t *testing.T) {
-	wp := New(2)
+	wp := pool.New(2)
 	releaseChan := make(chan struct{})
 
 	// Start workers, and have them all wait on a channel before completing.
@@ -356,7 +358,7 @@ func TestOverflow(t *testing.T) {
 }
 
 func TestStopRace(t *testing.T) {
-	wp := New(20)
+	wp := pool.New(20)
 	releaseChan := make(chan struct{})
 	workRelChan := make(chan struct{})
 
@@ -385,7 +387,7 @@ func TestWaitingQueueSizeRace(t *testing.T) {
 		tasks      = 20
 		workers    = 5
 	)
-	wp := New(workers)
+	wp := pool.New(workers)
 	maxChan := make(chan int)
 	for g := 0; g < goroutines; g++ {
 		go func() {
@@ -462,7 +464,7 @@ Run benchmarking with: go test -bench '.'
 */
 
 func BenchmarkEnqueue(b *testing.B) {
-	wp := New(1)
+	wp := pool.New(1)
 	defer wp.Stop()
 	releaseChan := make(chan struct{})
 
@@ -476,7 +478,7 @@ func BenchmarkEnqueue(b *testing.B) {
 }
 
 func BenchmarkEnqueue2(b *testing.B) {
-	wp := New(2)
+	wp := pool.New(2)
 	defer wp.Stop()
 	releaseChan := make(chan struct{})
 
@@ -495,7 +497,7 @@ func BenchmarkEnqueue2(b *testing.B) {
 }
 
 func BenchmarkExecute1Worker(b *testing.B) {
-	wp := New(1)
+	wp := pool.New(1)
 	defer wp.Stop()
 	var allDone sync.WaitGroup
 	allDone.Add(b.N)
@@ -513,7 +515,7 @@ func BenchmarkExecute1Worker(b *testing.B) {
 }
 
 func BenchmarkExecute2Worker(b *testing.B) {
-	wp := New(2)
+	wp := pool.New(2)
 	defer wp.Stop()
 	var allDone sync.WaitGroup
 	allDone.Add(b.N)
@@ -531,7 +533,7 @@ func BenchmarkExecute2Worker(b *testing.B) {
 }
 
 func BenchmarkExecute4Workers(b *testing.B) {
-	wp := New(4)
+	wp := pool.New(4)
 	defer wp.Stop()
 	var allDone sync.WaitGroup
 	allDone.Add(b.N)
@@ -549,7 +551,7 @@ func BenchmarkExecute4Workers(b *testing.B) {
 }
 
 func BenchmarkExecute16Workers(b *testing.B) {
-	wp := New(16)
+	wp := pool.New(16)
 	defer wp.Stop()
 	var allDone sync.WaitGroup
 	allDone.Add(b.N)
@@ -567,7 +569,7 @@ func BenchmarkExecute16Workers(b *testing.B) {
 }
 
 func BenchmarkExecute64Workers(b *testing.B) {
-	wp := New(64)
+	wp := pool.New(64)
 	defer wp.Stop()
 	var allDone sync.WaitGroup
 	allDone.Add(b.N)
