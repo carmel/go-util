@@ -5,7 +5,7 @@ import (
 	"goutil/http"
 	"testing"
 
-	http "github.com/goUtil/http"
+	http "github.com/carmel/goUtil/http"
 )
 
 func TestHttp(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	certi "github.com/goUtil/certi"
+	certi "github.com/carmel/goUtil/certi"
 )
 
 func TestEncode(t *testing.T) {

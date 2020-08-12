@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	pool "github.com/goUtil/pool"
+	pool "github.com/carmel/goUtil/pool"
 )
 
 const max = 20
