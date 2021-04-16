@@ -4,9 +4,11 @@
 package ssh
 
 import (
+	"errors"
 	"io"
 	"net"
 	"os"
+	"path/filepath"
 
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
@@ -78,7 +80,7 @@ func (c SSHClient) Upload(localPath string, remotePath string) (err error) {
 	}
 	defer ftp.Close()
 
-	remote, err := ftp.Create(remotePath)
+	remote, err := ftp.Create(remotePath + string(os.PathSeparator) + filepath.Base(localPath))
 	if err != nil {
 		return
 	}
@@ -89,29 +91,36 @@ func (c SSHClient) Upload(localPath string, remotePath string) (err error) {
 }
 
 // Download file from remote server!
-func (c SSHClient) Download(remotePath string, localPath string) (err error) {
-
-	local, err := os.Create(localPath)
-	if err != nil {
-		return
+func (c SSHClient) Download(remotePath string, localPath string) error {
+	var filePath = localPath + string(os.PathSeparator) + filepath.Base(remotePath)
+	_, err := os.Stat(filePath)
+	if err == nil {
+		return errors.New("file exists.")
 	}
-	defer local.Close()
+	if os.IsNotExist(err) {
+		local, err := os.Create(filePath)
+		if err != nil {
+			return err
+		}
+		defer local.Close()
 
-	ftp, err := c.NewSftp()
-	if err != nil {
-		return
+		ftp, err := c.NewSftp()
+		if err != nil {
+			return err
+		}
+		defer ftp.Close()
+
+		remote, err := ftp.Open(remotePath)
+		if err != nil {
+			return err
+		}
+		defer remote.Close()
+
+		if _, err = io.Copy(local, remote); err != nil {
+			return err
+		}
+
+		return local.Sync()
 	}
-	defer ftp.Close()
-
-	remote, err := ftp.Open(remotePath)
-	if err != nil {
-		return
-	}
-	defer remote.Close()
-
-	if _, err = io.Copy(local, remote); err != nil {
-		return
-	}
-
-	return local.Sync()
+	return err
 }
