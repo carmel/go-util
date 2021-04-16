@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	pool "goUtil/pool"
+	pool "goUtil/pool/v1"
 )
 
 const max = 20
