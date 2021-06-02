@@ -87,7 +87,7 @@ func TestSSHPass(t *testing.T) {
 	res, err := shClient.Run("ls /home/app_test")
 	fmt.Println(string(res), err)
 	fmt.Println()
-	fmt.Println(shClient.Download("/home/app_test/app.pid", "app.pid"))
+	fmt.Println(shClient.Download("/home/app_test/app.pid", "./"))
 }
 
 func newServer(port string) {

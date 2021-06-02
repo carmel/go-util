@@ -6,8 +6,11 @@ package ssh
 import (
 	"errors"
 	"io"
+	"io/fs"
+	"io/ioutil"
 	"net"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/pkg/sftp"
@@ -61,26 +64,24 @@ func (c SSHClient) Run(cmd string) ([]byte, error) {
 
 // NewSftp returns new sftp client and error if any.
 func (c SSHClient) NewSftp(opts ...sftp.ClientOption) (*sftp.Client, error) {
-	c.init()
+	if err := c.init(); err != nil {
+		return nil, err
+	}
 	return sftp.NewClient(c.Client, opts...)
 }
 
 // Upload a local file to remote server!
-func (c SSHClient) Upload(localPath string, remotePath string) (err error) {
+func (c SSHClient) UploadFile(sftpCli *sftp.Client, localPath string, remoteDir string) (err error) {
 
-	local, err := os.Open(localPath)
+	var local *os.File
+	local, err = os.Open(localPath)
 	if err != nil {
 		return
 	}
 	defer local.Close()
 
-	ftp, err := c.NewSftp()
-	if err != nil {
-		return
-	}
-	defer ftp.Close()
-
-	remote, err := ftp.Create(remotePath + string(os.PathSeparator) + filepath.Base(localPath))
+	var remote *sftp.File
+	remote, err = sftpCli.Create(path.Join(remoteDir, filepath.Base(localPath)))
 	if err != nil {
 		return
 	}
@@ -90,9 +91,51 @@ func (c SSHClient) Upload(localPath string, remotePath string) (err error) {
 	return
 }
 
+// Upload a local file or directory to remote server!
+func (c SSHClient) Upload(localPath string, remoteDir string) (err error) {
+
+	//获取路径的属性
+	s, err := os.Stat(localPath)
+	if err != nil {
+		return
+	}
+
+	ftp, err := c.NewSftp()
+	if err != nil {
+		return
+	}
+	defer ftp.Close()
+
+	// 判断是否是文件夹
+	if s.IsDir() {
+		var localFiles []fs.FileInfo
+		localFiles, err = ioutil.ReadDir(localPath)
+		if err != nil {
+			return
+		}
+		// 先创建最外层文件夹
+		remoteDir = path.Join(remoteDir, s.Name())
+		err = ftp.Mkdir(remoteDir)
+		if err != nil {
+			return
+		}
+		// 遍历文件夹内容
+		for _, backupDir := range localFiles {
+			// 判断是否是文件,是文件直接上传.是文件夹,先远程创建文件夹,再递归复制内部文件
+			err = c.Upload(path.Join(localPath, backupDir.Name()), remoteDir)
+			if err != nil {
+				return
+			}
+		}
+	} else {
+		err = c.UploadFile(ftp, localPath, remoteDir)
+	}
+	return
+}
+
 // Download file from remote server!
 func (c SSHClient) Download(remotePath string, localPath string) error {
-	var filePath = localPath + string(os.PathSeparator) + filepath.Base(remotePath)
+	var filePath = path.Join(localPath, filepath.Base(remotePath))
 	_, err := os.Stat(filePath)
 	if err == nil {
 		return errors.New("file exists.")
