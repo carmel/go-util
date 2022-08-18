@@ -201,3 +201,14 @@ func PasswordKey(username string, password string, timeout int) *ssh.ClientConfi
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 }
+
+type WriteCounter struct {
+	Total int64 // Total # of bytes written
+}
+
+func (wc *WriteCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.Total += int64(n)
+	fmt.Fprintf(os.Stdout, "%.2f kb transferred\n", float64(wc.Total/1024))
+	return n, nil
+}

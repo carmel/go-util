@@ -17,12 +17,12 @@ var (
 	rootOrg         = flag.String("root-org", "root", "root organization name")
 	serverOrg       = flag.String("server-org", "server", "server organization name")
 	clientOrg       = flag.String("client-org", "client", "client organization name")
-	rootStartDate   = flag.String("root-start-date", "2020-07-22", "Creation date of root certificate formatted as 2020-07-22")
-	rootExpire      = flag.Int("root-expire", 365, "Days of duration that root certificate is valid")
-	serverStartDate = flag.String("server-start-date", "2020-07-22", "Creation date server certificate formatted as 2020-07-22")
-	serverExpire    = flag.Int("server-expire", 365, "Day of duration that server certificate is valid")
-	clientStartDate = flag.String("client-start-date", "2020-07-22", "Creation date client certificate formatted as 2020-07-22")
-	clientExpire    = flag.Int("client-expire", 365, "Day of duration that client certificate is valid")
+	rootStartDate   = flag.String("root-start-date", "2022-01-01", "Creation date of root certificate formatted as 2020-07-22")
+	rootExpire      = flag.Int("root-expire", 3650, "Days of duration that root certificate is valid")
+	serverStartDate = flag.String("server-start-date", "2022-01-01", "Creation date server certificate formatted as 2020-07-22")
+	serverExpire    = flag.Int("server-expire", 3650, "Day of duration that server certificate is valid")
+	clientStartDate = flag.String("client-start-date", "2022-01-01", "Creation date client certificate formatted as 2020-07-22")
+	clientExpire    = flag.Int("client-expire", 3650, "Day of duration that client certificate is valid")
 )
 
 func main() {

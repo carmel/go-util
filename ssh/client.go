@@ -5,6 +5,7 @@ package ssh
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -70,8 +71,8 @@ func (c SSHClient) NewSftp(opts ...sftp.ClientOption) (*sftp.Client, error) {
 	return sftp.NewClient(c.Client, opts...)
 }
 
-// Upload a local file to remote server!
-func (c SSHClient) UploadFile(sftpCli *sftp.Client, localPath string, remoteDir string) (err error) {
+// uploadFile a local file to remote server!
+func (c SSHClient) uploadFile(sftpCli *sftp.Client, localPath string, remoteDir string) (err error) {
 
 	var local *os.File
 	local, err = os.Open(localPath)
@@ -81,13 +82,23 @@ func (c SSHClient) UploadFile(sftpCli *sftp.Client, localPath string, remoteDir 
 	defer local.Close()
 
 	var remote *sftp.File
-	remote, err = sftpCli.Create(path.Join(remoteDir, filepath.Base(localPath)))
+	remotePath := path.Join(remoteDir, filepath.Base(localPath))
+	remote, err = sftpCli.Create(remotePath)
 	if err != nil {
+		err = fmt.Errorf("[Create: %s] %w", remotePath, err)
 		return
 	}
 	defer remote.Close()
 
-	_, err = io.Copy(remote, local)
+	// size := len(s)
+	// info, err := local.Stat()
+	// if err != nil {
+	// 	return err
+	// }
+
+	var count int64
+	count, err = io.Copy(remote, io.TeeReader(local, &WriteCounter{}))
+	fmt.Fprintf(os.Stdout, "Transferred %.2f kb\n", float64(count/1024))
 	return
 }
 
@@ -117,18 +128,18 @@ func (c SSHClient) Upload(localPath string, remoteDir string) (err error) {
 		remoteDir = path.Join(remoteDir, s.Name())
 		err = ftp.Mkdir(remoteDir)
 		if err != nil {
-			return
+			return fmt.Errorf("[Mkdir: %s] %w", remoteDir, err)
 		}
 		// 遍历文件夹内容
 		for _, backupDir := range localFiles {
 			// 判断是否是文件,是文件直接上传.是文件夹,先远程创建文件夹,再递归复制内部文件
 			err = c.Upload(path.Join(localPath, backupDir.Name()), remoteDir)
 			if err != nil {
-				return
+				return fmt.Errorf("[Upload to: %s] %w", remoteDir, err)
 			}
 		}
 	} else {
-		err = c.UploadFile(ftp, localPath, remoteDir)
+		err = c.uploadFile(ftp, localPath, remoteDir)
 	}
 	return
 }
@@ -143,12 +154,13 @@ func (c SSHClient) Download(remotePath string, localPath string) error {
 	if os.IsNotExist(err) {
 		local, err := os.Create(filePath)
 		if err != nil {
-			return err
+			return fmt.Errorf("[Create: %s] %w", filePath, err)
 		}
 		defer local.Close()
 
 		ftp, err := c.NewSftp()
 		if err != nil {
+
 			return err
 		}
 		defer ftp.Close()

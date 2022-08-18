@@ -3,6 +3,7 @@ module goUtil
 go 1.16
 
 require (
+	github.com/google/gopacket v1.1.19 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.0
 	github.com/shopspring/decimal v1.2.0

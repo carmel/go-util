@@ -171,3 +171,10 @@ func newServer(port string) {
 		}
 	}()
 }
+
+func TestFiletransfer(t *testing.T) {
+	// ssh u0_a293@192.168.3.2 -p 8022
+	ssh := sh.NewSSHClient("192.168.3.2", "8022", sh.PasswordKey("u0_a293", "7723", 20))
+	// 上传服务
+	fmt.Println(ssh.Upload("/Users/carmel/Desktop/Metronome.apk", "/data/data/com.termux/files/home"))
+}
