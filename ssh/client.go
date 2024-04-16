@@ -149,7 +149,7 @@ func (c SSHClient) Download(remotePath string, localPath string) error {
 	var filePath = path.Join(localPath, filepath.Base(remotePath))
 	_, err := os.Stat(filePath)
 	if err == nil {
-		return errors.New("file exists.")
+		return errors.New("file exists")
 	}
 	if os.IsNotExist(err) {
 		local, err := os.Create(filePath)

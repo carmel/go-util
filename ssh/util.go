@@ -71,11 +71,6 @@ func CheckKnownHost(host string, remote net.Addr, key ssh.PublicKey, knownFile s
 		return true, keyErr
 	}
 
-	// Some other error occurred and safest way to handle is to pass it back to user.
-	if err != nil {
-		return false, err
-	}
-
 	// Key is not trusted because it is not in the file.
 	return false, nil
 }
@@ -115,7 +110,7 @@ func AddKnownHost(host string, remote net.Addr, key ssh.PublicKey, knownFile str
 
 // PrivateKey Loads a private and public key from "path" and returns a SSH ClientConfig to authenticate with the server
 func PrivateKey(username string, path string, timeout int) (*ssh.ClientConfig, error) {
-	privateKey, err := ioutil.ReadFile(path)
+	privateKey, err := os.ReadFile(path)
 
 	if err != nil {
 		return nil, err
