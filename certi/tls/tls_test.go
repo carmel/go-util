@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 
 	pool := x509.NewCertPool()
 
-	caCrt, err := ioutil.ReadFile("root.pem")
+	caCrt, err := os.ReadFile("root.pem")
 	if err != nil {
 		fmt.Println("ReadFile err:", err)
 		return
@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 func TestTcpClient(t *testing.T) {
 	pool := x509.NewCertPool()
 
-	caCrt, err := ioutil.ReadFile("root.pem")
+	caCrt, err := os.ReadFile("root.pem")
 	if err != nil {
 		fmt.Println("ReadFile err:", err)
 		return
@@ -94,7 +94,7 @@ func TestTcpClient(t *testing.T) {
 func TestHttpClient(t *testing.T) {
 	pool := x509.NewCertPool()
 
-	caCrt, err := ioutil.ReadFile("root.pem")
+	caCrt, err := os.ReadFile("root.pem")
 	if err != nil {
 		fmt.Println("ReadFile err:", err)
 		return
@@ -120,6 +120,6 @@ func TestHttpClient(t *testing.T) {
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	fmt.Println(string(body))
 }

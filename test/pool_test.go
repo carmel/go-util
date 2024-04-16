@@ -7,6 +7,7 @@ import (
 	"time"
 
 	pool "goUtil/pool/v1"
+	pool2 "goUtil/pool/v2"
 )
 
 const max = 20
@@ -584,4 +585,19 @@ func BenchmarkExecute64Workers(b *testing.B) {
 		})
 	}
 	allDone.Wait()
+}
+
+func TestPool2(t *testing.T) {
+	wp := pool2.NewPool(4, &sync.WaitGroup{})
+
+	for i := 0; i < 100000; i++ {
+		wp.Acquire()
+		go func() {
+			defer wp.Release()
+			fmt.Println("pool2 print: ", i)
+		}()
+
+	}
+
+	wp.Wait()
 }
