@@ -2,8 +2,9 @@ package util
 
 import (
 	"fmt"
-	"goUtil/rule"
 	"testing"
+
+	"github.com/carmel/go-util/rule"
 )
 
 func TestFn(t *testing.T) {

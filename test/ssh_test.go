@@ -2,7 +2,7 @@ package util
 
 import (
 	"fmt"
-	sh "goUtil/ssh"
+	sh "github.com/carmel/go-util/ssh"
 	"log"
 	"net"
 	"testing"

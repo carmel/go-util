@@ -1,8 +1,8 @@
-# goUtil
+# github.com/carmel/go-util
 
 一些常用工具类的开发包
 
-- ## [CA 证书生成及解析](https://github.com/carmel/goUtil/ceti)
+- ## [CA 证书生成及解析](https://github.com/carmel/github.com/carmel/go-util/ceti)
   证书相关的文件有如下格式：
   - **`.key`** - 通常指私钥
   - **`.csr`** - 证书签名请求 ( `Certificate Signing Request` )。可理解成公钥，生成证书时需将其发送给权威的证书颁发机构
@@ -17,6 +17,6 @@
 
 **注**：该库生成的公钥格式均为`pem`，私钥格式均为`key`。
 
-- ## [队列](https://github.com/carmel/goUtil/deque)
+- ## [队列](https://github.com/carmel/github.com/carmel/go-util/deque)
 
-- ## [线程池](https://github.com/carmel/goUtil/pool)
+- ## [线程池](https://github.com/carmel/github.com/carmel/go-util/pool)

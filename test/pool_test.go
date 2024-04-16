@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	pool "goUtil/pool/v1"
-	pool2 "goUtil/pool/v2"
+	pool "github.com/carmel/go-util/pool/v1"
+	pool2 "github.com/carmel/go-util/pool/v2"
 )
 
 const max = 20

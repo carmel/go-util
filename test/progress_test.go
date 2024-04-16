@@ -3,10 +3,11 @@ package util
 import (
 	"bytes"
 	"fmt"
-	"goUtil/progress"
 	"io"
 	"log"
 	"testing"
+
+	"github.com/carmel/go-util/progress"
 )
 
 func TestBar(t *testing.T) {

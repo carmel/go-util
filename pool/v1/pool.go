@@ -1,10 +1,11 @@
 package pool
 
 import (
-	"goUtil/deque"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/carmel/go-util/deque"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"goUtil/http"
+	"github.com/carmel/go-util/http"
 )
 
 func TestHttp(t *testing.T) {

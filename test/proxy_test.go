@@ -3,7 +3,7 @@ package util
 // import (
 // 	"flag"
 // 	"fmt"
-// 	"goUtil/proxy"
+// 	"github.com/carmel/go-util/proxy"
 // 	"log"
 // 	"net"
 // 	"testing"
